@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConectaHubSV — Gestión simple, respaldo real.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0D1B6E;
+  --navy-dark:#091255;
+  --blue:#3D5AF1;
+  --blue-light:#5B8DEF;
+  --orange:#E8450A;
+  --white:#FFFFFF;
+  --gray-light:#F4F6FB;
+  --gray-mid:#E8EDF7;
+  --text:#1a1a2e;
+  --text-muted:#5a6180;
+}
+body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);overflow-x:hidden}
+nav{background:var(--navy);padding:0 5%;display:flex;align-items:center;justify-content:space-between;height:70px;position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.nav-logo-icon{width:36px;height:36px;background:var(--white);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-logo-text{font-family:'Playfair Display',serif;color:var(--white);font-size:20px;letter-spacing:-0.3px}
+.nav-logo-text span{color:var(--blue-light)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{color:rgba(255,255,255,0.75);text-decoration:none;font-size:14px;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-cta{background:var(--orange);color:var(--white);border:none;padding:10px 22px;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:background .2s;white-space:nowrap}
+.nav-cta:hover{background:#c93a07}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-hamburger span{width:22px;height:2px;background:var(--white);border-radius:2px;display:block}
+.nav-mobile-menu{display:none;flex-direction:column;background:var(--navy-dark);padding:20px 5%;gap:16px}
+.nav-mobile-menu a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:15px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08)}
+.nav-mobile-menu .nav-cta{text-align:center;margin-top:8px}
+.hero{background:var(--navy);min-height:88vh;display:flex;align-items:center;padding:80px 5% 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;right:-80px;width:600px;height:600px;border-radius:50%;border:1px solid rgba(255,255,255,0.05)}
+.hero-content{max-width:580px;position:relative;z-index:2}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(93,138,239,0.15);border:1px solid rgba(93,138,239,0.3);color:var(--blue-light);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-bottom:28px}
+.hero-badge-dot{width:6px;height:6px;background:var(--orange);border-radius:50%;flex-shrink:0}
+.hero h1{font-family:'Playfair Display',serif;font-size:52px;line-height:1.15;color:var(--white);margin-bottom:20px;font-weight:700}
+.hero h1 span{color:var(--blue-light)}
+.hero p{font-size:17px;line-height:1.7;color:rgba(255,255,255,0.65);margin-bottom:36px;font-weight:300}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{background:var(--orange);color:var(--white);padding:14px 28px;border-radius:8px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:background .2s;display:inline-block}
+.btn-primary:hover{background:#c93a07}
+.btn-secondary{background:transparent;color:var(--white);padding:14px 28px;border-radius:8px;font-size:15px;font-weight:500;border:1px solid rgba(255,255,255,0.25);cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .2s;display:inline-block}
+.btn-secondary:hover{border-color:rgba(255,255,255,0.6)}
+.hero-stats{display:flex;gap:40px;margin-top:52px;padding-top:40px;border-top:1px solid rgba(255,255,255,0.1);flex-wrap:wrap}
+.stat-num{font-family:'Playfair Display',serif;font-size:32px;color:var(--white);font-weight:700}
+.stat-label{font-size:12px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
+.section{padding:88px 5%}
+.section-label{font-size:12px;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.section-title{font-family:'Playfair Display',serif;font-size:38px;line-height:1.2;color:var(--navy);margin-bottom:16px}
+.section-subtitle{font-size:16px;color:var(--text-muted);line-height:1.7;max-width:560px}
+.problema{background:var(--gray-light)}
+.problema-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:52px}
+.problema-points{display:flex;flex-direction:column;gap:24px}
+.punto{display:flex;gap:16px;align-items:flex-start}
+.punto-icon{width:42px;height:42px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.punto-icon svg{width:20px;height:20px;stroke:var(--blue-light);stroke-width:1.8;fill:none}
+.punto-text h4{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.punto-text p{font-size:14px;color:var(--text-muted);line-height:1.6}
+.problema-card{background:var(--navy);border-radius:16px;padding:36px;color:var(--white)}
+.problema-card h3{font-family:'Playfair Display',serif;font-size:24px;margin-bottom:16px;color:var(--orange)}
+.problema-card p{font-size:14px;color:rgba(255,255,255,0.65);line-height:1.7;margin-bottom:20px}
+.problema-card .tag{display:inline-block;background:rgba(93,138,239,0.2);color:var(--blue-light);padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;margin:4px 4px 4px 0}
+.servicios-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:52px}
+.servicio-card{background:var(--white);border:1px solid var(--gray-mid);border-radius:14px;padding:28px;transition:all .25s}
+.servicio-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:0 12px 32px rgba(13,27,110,0.1)}
+.servicio-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.servicio-icon.azul{background:rgba(61,90,241,0.1)}
+.servicio-icon.naranja{background:rgba(232,69,10,0.1)}
+.servicio-icon.navy{background:rgba(13,27,110,0.08)}
+.servicio-icon svg{width:24px;height:24px;stroke-width:1.8;fill:none}
+.servicio-icon.azul svg{stroke:var(--blue)}
+.servicio-icon.naranja svg{stroke:var(--orange)}
+.servicio-icon.navy svg{stroke:var(--navy)}
+.servicio-card h3{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px}
+.servicio-card p{font-size:14px;color:var(--text-muted);line-height:1.6}
+.nosotros{background:var(--navy);color:var(--white)}
+.nosotros .section-title{color:var(--white)}
+.nosotros .section-subtitle{color:rgba(255,255,255,0.6)}
+.nosotros-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;margin-top:52px}
+.nosotros-values{display:flex;flex-direction:column;gap:20px}
+.value-item{display:flex;gap:16px;align-items:flex-start;padding:20px;background:rgba(255,255,255,0.06);border-radius:12px;border:1px solid rgba(255,255,255,0.08)}
+.value-num{font-family:'Playfair Display',serif;font-size:28px;color:var(--blue-light);font-weight:700;min-width:40px}
+.value-text h4{font-size:14px;font-weight:600;color:var(--white);margin-bottom:4px}
+.value-text p{font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6}
+.nosotros-info{display:flex;flex-direction:column;gap:20px}
+.info-block{padding:24px;background:rgba(255,255,255,0.05);border-radius:12px;border-left:3px solid var(--orange)}
+.info-block h4{font-size:13px;font-weight:600;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.info-block p{font-size:15px;color:var(--white);line-height:1.6}
+.testimonios{background:var(--gray-light)}
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:52px}
+.test-card{background:var(--white);border:1px solid var(--gray-mid);border-radius:14px;padding:28px}
+.test-stars{display:flex;gap:4px;margin-bottom:16px}
+.star{width:14px;height:14px;background:var(--orange);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.test-card p{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:20px;font-style:italic}
+.test-author{display:flex;align-items:center;gap:12px}
+.test-avatar{width:38px;height:38px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--white);flex-shrink:0}
+.test-author-info h5{font-size:13px;font-weight:600;color:var(--navy)}
+.test-author-info span{font-size:12px;color:var(--text-muted)}
+.contacto-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:52px}
+.contacto-info{display:flex;flex-direction:column;gap:24px}
+.contacto-item{display:flex;gap:14px;align-items:flex-start}
+.contacto-item-icon{width:40px;height:40px;background:var(--gray-light);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contacto-item-icon svg{width:18px;height:18px;stroke:var(--navy);stroke-width:1.8;fill:none}
+.contacto-item h4{font-size:13px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.contacto-item p{font-size:15px;color:var(--navy);font-weight:500}
+.horario-card{background:var(--navy);border-radius:14px;padding:28px;color:var(--white);margin-top:8px}
+.contacto-form{background:var(--gray-light);border-radius:16px;padding:36px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--navy);margin-bottom:6px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:11px 14px;border:1px solid var(--gray-mid);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--white);outline:none;transition:border .2s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue)}
+.form-group textarea{height:100px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn-form{width:100%;background:var(--navy);color:var(--white);padding:13px;border-radius:8px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.btn-form:hover{background:var(--blue)}
+footer{background:var(--navy-dark);padding:40px 5%;color:rgba(255,255,255,0.5)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:'Playfair Display',serif;font-size:18px;color:var(--white)}
+.footer-logo span{color:var(--blue-light)}
+.footer-tagline{font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px}
+.footer-copy{font-size:12px;text-align:right}
+@media(max-width:768px){
+  nav{padding:0 4%}
+  .nav-links,.nav-cta{display:none}
+  .nav-hamburger{display:flex}
+  .nav-mobile-menu.open{display:flex}
+  .hero{padding:60px 4% 48px;min-height:auto}
+  .hero h1{font-size:34px}
+  .hero p{font-size:15px}
+  .hero-stats{gap:24px}
+  .stat-num{font-size:26px}
+  .section{padding:60px 4%}
+  .section-title{font-size:28px}
+  .problema-grid{grid-template-columns:1fr;gap:32px}
+  .servicios-grid{grid-template-columns:1fr;gap:16px}
+  .nosotros-grid{grid-template-columns:1fr;gap:32px}
+  .test-grid{grid-template-columns:1fr;gap:16px}
+  .contacto-grid{grid-template-columns:1fr;gap:32px}
+  .form-row{grid-template-columns:1fr}
+  .footer-inner{flex-direction:column;align-items:flex-start}
+  .footer-copy{text-align:left}
+}
+@media(max-width:480px){
+  .hero h1{font-size:28px}
+  .hero-btns{flex-direction:column}
+  .btn-primary,.btn-secondary{text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+        <circle cx="16" cy="20" r="7" fill="#0D1B6E"/>
+        <circle cx="30" cy="11" r="4" fill="#3D5AF1"/>
+        <circle cx="30" cy="20" r="4" fill="#5B8DEF"/>
+        <circle cx="30" cy="29" r="4" fill="#3D5AF1"/>
+        <circle cx="10" cy="12" r="3" fill="#E8450A"/>
+        <line x1="22" y1="17" x2="27" y2="13" stroke="#5B8DEF" stroke-width="1.5"/>
+        <line x1="23" y1="20" x2="26" y2="20" stroke="#5B8DEF" stroke-width="1.5"/>
+        <line x1="22" y1="23" x2="27" y2="27" stroke="#5B8DEF" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <span class="nav-logo-text">ConectaHub<span>SV</span></span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Solicitar demo</a>
+  <div class="nav-hamburger" onclick="toggleMenu()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="nav-mobile-menu" id="mobileMenu">
+  <a href="#servicios" onclick="toggleMenu()">Servicios</a>
+  <a href="#nosotros" onclick="toggleMenu()">Nosotros</a>
+  <a href="#contacto" onclick="toggleMenu()">Contacto</a>
+  <a href="#contacto" class="nav-cta" onclick="toggleMenu()">Solicitar demo</a>
+</div>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>Soluciones para MYPEs salvadoreñas</div>
+    <h1>Gestión simple,<br><span>respaldo real.</span></h1>
+    <p>Ayudamos a pequeñas y medianas empresas de El Salvador a ordenar sus operaciones, gestionar clientes y crecer con herramientas digitales accesibles.</p>
+    <div class="hero-btns">
+      <a href="#contacto" class="btn-primary">Solicitar demo gratuita</a>
+      <a href="#servicios" class="btn-secondary">Ver servicios</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">+50</div><div class="stat-label">Empresas atendidas</div></div>
+      <div class="stat-item"><div class="stat-num">La Unión</div><div class="stat-label">El Salvador</div></div>
+      <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Enfoque local</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section problema" id="problema">
+  <div class="section-label">El problema</div>
+  <div class="section-title">¿Tu negocio crece<br>pero la gestión se complica?</div>
+  <div class="problema-grid">
+    <div class="problema-points">
+      <div class="punto">
+        <div class="punto-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="punto-text"><h4>Clientes dispersos, sin seguimiento</h4><p>La información de tus clientes vive en papeles, WhatsApp o en tu memoria.</p></div>
+      </div>
+      <div class="punto">
+        <div class="punto-icon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="punto-text"><h4>Trámites sin control ni fechas</h4><p>Se pierden fechas importantes, se vencen plazos y los clientes quedan insatisfechos.</p></div>
+      </div>
+      <div class="punto">
+        <div class="punto-icon"><svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="punto-text"><h4>Facturación sin orden ni registro</h4><p>No sabes exactamente cuánto facturaste ni qué cobros tienes pendientes.</p></div>
+      </div>
+    </div>
+    <div class="problema-card">
+      <h3>ConectaHubSV lo resuelve</h3>
+      <p>Una plataforma diseñada específicamente para el contexto salvadoreño, con herramientas simples que tu equipo puede usar desde el primer día.</p>
+      <span class="tag">CRM local</span>
+      <span class="tag">Seguimiento de trámites</span>
+      <span class="tag">Facturación</span>
+      <span class="tag">Reportes</span>
+      <span class="tag">Alertas automáticas</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="servicios">
+  <div class="section-label">Lo que ofrecemos</div>
+  <div class="section-title">Servicios diseñados<br>para tu realidad</div>
+  <div class="section-subtitle">Soluciones prácticas para que tu negocio funcione con orden y profesionalismo.</div>
+  <div class="servicios-grid">
+    <div class="servicio-card">
+      <div class="servicio-icon azul"><svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h3>CRM para MYPEs</h3>
+      <p>Gestiona clientes, asigna asesores, registra trámites y lleva el historial completo en un solo lugar.</p>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon naranja"><svg viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <h3>Seguimiento de trámites</h3>
+      <p>Tablero Kanban en tiempo real: Iniciado, En proceso, Revisión final y Completado. Nunca pierdas un trámite.</p>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon navy"><svg viewBox="0 0 24 24" fill="none"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+      <h3>Reportes y facturación</h3>
+      <p>Ingresos del mes, cobros pendientes y servicios más solicitados con reportes automáticos.</p>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon azul"><svg viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <h3>Alertas de vencimiento</h3>
+      <p>El sistema avisa automáticamente cuando un trámite está próximo a vencer. Cero sorpresas.</p>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon naranja"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <h3>Acceso desde cualquier lugar</h3>
+      <p>Plataforma 100% web. Accede desde computadora, tablet o celular sin instalar nada.</p>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon navy"><svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <h3>Roles y permisos</h3>
+      <p>Supervisores con acceso total, asesores con su vista personalizada. Seguridad y orden en tu equipo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section nosotros" id="nosotros">
+  <div class="section-label" style="color:var(--blue-light)">Quiénes somos</div>
+  <div class="section-title">Nació en La Unión,<br>para El Salvador</div>
+  <div class="section-subtitle">Somos un equipo comprometido con el desarrollo económico local, construyendo tecnología accesible para los negocios que sostienen nuestras comunidades.</div>
+  <div class="nosotros-grid">
+    <div class="nosotros-values">
+      <div class="value-item"><div class="value-num">01</div><div class="value-text"><h4>Contexto local</h4><p>Entendemos las necesidades de las MYPEs salvadoreñas porque somos parte de esa realidad.</p></div></div>
+      <div class="value-item"><div class="value-num">02</div><div class="value-text"><h4>Tecnología accesible</h4><p>Sin complicaciones técnicas. Si puedes usar WhatsApp, puedes usar ConectaHubSV.</p></div></div>
+      <div class="value-item"><div class="value-num">03</div><div class="value-text"><h4>Respaldo continuo</h4><p>No te dejamos solo después de implementar. Estamos contigo en cada paso.</p></div></div>
+    </div>
+    <div class="nosotros-info">
+      <div class="info-block"><h4>Nuestra misión</h4><p>Digitalizar y fortalecer la gestión de pequeñas y medianas empresas en El Salvador con herramientas simples de impacto real.</p></div>
+      <div class="info-block"><h4>Nuestra visión</h4><p>Ser la plataforma de gestión empresarial de referencia para las MYPEs del oriente de El Salvador.</p></div>
+      <div class="info-block"><h4>Dónde operamos</h4><p>La Unión, El Salvador — con alcance a todo el país.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section testimonios" id="testimonios">
+  <div class="section-label">Lo que dicen</div>
+  <div class="section-title">Negocios que ya<br>confían en nosotros</div>
+  <div class="test-grid">
+    <div class="test-card">
+      <div class="test-stars"><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span></div>
+      <p>"Antes perdíamos el hilo de cada cliente. Ahora todo está en un lugar y mi equipo sabe exactamente qué hacer cada día."</p>
+      <div class="test-author"><div class="test-avatar">ML</div><div class="test-author-info"><h5>María López</h5><span>Asesoría Mercantil La Unión</span></div></div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars"><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span></div>
+      <p>"El sistema de alertas nos salvó varias veces. Nos avisa antes de que venzan los trámites y podemos actuar a tiempo."</p>
+      <div class="test-author"><div class="test-avatar">CR</div><div class="test-author-info"><h5>Carlos Ramírez</h5><span>Comercio El Progreso</span></div></div>
+    </div>
+    <div class="test-card" style="display:flex;align-items:center;justify-content:center;background:rgba(13,27,110,0.03);border-style:dashed">
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:32px;margin-bottom:12px">💬</div>
+        <p style="font-style:normal;color:var(--text-muted);font-size:14px">Tu testimonio podría estar aquí.</p>
+        <a href="#contacto" style="display:inline-block;margin-top:12px;color:var(--blue);font-size:13px;font-weight:500;text-decoration:none">Solicitar demo →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contacto">
+  <div class="section-label">Hablemos</div>
+  <div class="section-title">¿Listo para ordenar<br>tu negocio?</div>
+  <div class="section-subtitle">Escríbenos y te mostramos cómo ConectaHubSV puede transformar la gestión de tu empresa.</div>
+  <div class="contacto-grid">
+    <div class="contacto-info">
+      <div class="contacto-item">
+        <div class="contacto-item-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.96-1.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 15.5v.42z"/></svg></div>
+        <div><h4>Teléfono / WhatsApp</h4><p>7208-8582</p></div>
+      </div>
+      <div class="contacto-item">
+        <div class="contacto-item-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div><h4>Correo electrónico</h4><p>info@conectahubsv.com</p></div>
+      </div>
+      <div class="contacto-item">
+        <div class="contacto-item-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></div>
+        <div><h4>Facebook</h4><p>ConectaHubSV</p></div>
+      </div>
+      <div class="horario-card">
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Horario de atención</div>
+        <div style="font-size:15px;font-weight:500;color:var(--white)">Lunes a Viernes</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-top:4px">8:00 AM — 5:00 PM</div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);font-size:13px;color:rgba(255,255,255,0.5)">La Unión, El Salvador</div>
+      </div>
+    </div>
+    <div class="contacto-form">
+      <div class="form-row">
+        <div class="form-group"><label>Nombre completo</label><input type="text" placeholder="Tu nombre"></div>
+        <div class="form-group"><label>Empresa / Negocio</label><input type="text" placeholder="Nombre de tu empresa"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Correo electrónico</label><input type="email" placeholder="correo@tuempresa.com"></div>
+        <div class="form-group"><label>Teléfono</label><input type="tel" placeholder="7000-0000"></div>
+      </div>
+      <div class="form-group">
+        <label>¿Qué necesitas?</label>
+        <select><option value="">Selecciona una opción</option><option>Demo del CRM</option><option>Información de servicios</option><option>Soporte técnico</option><option>Otro</option></select>
+      </div>
+      <div class="form-group"><label>Mensaje</label><textarea placeholder="Cuéntanos sobre tu negocio y cómo podemos ayudarte..."></textarea></div>
+      <button class="btn-form">Enviar mensaje</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">ConectaHub<span>SV</span></div>
+      <div class="footer-tagline">Gestión simple, respaldo real.</div>
+    </div>
+    <div class="footer-copy">
+      <div>© 2026 ConectaHubSV. Todos los derechos reservados.</div>
+      <div style="margin-top:4px">La Unión, El Salvador</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleMenu(){
+  var m=document.getElementById('mobileMenu');
+  m.classList.toggle('open');
+}
+</script>
+</body>
+</html>
