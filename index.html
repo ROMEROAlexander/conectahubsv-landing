@@ -355,7 +355,7 @@ footer{background:var(--navy-dark);padding:40px 5%;color:rgba(255,255,255,0.5)}
         <select><option value="">Selecciona una opción</option><option>Demo del CRM</option><option>Información de servicios</option><option>Soporte técnico</option><option>Otro</option></select>
       </div>
       <div class="form-group"><label>Mensaje</label><textarea placeholder="Cuéntanos sobre tu negocio y cómo podemos ayudarte..."></textarea></div>
-      <button class="btn-form">Enviar mensaje</button>
+      <button class="btn-form" onclick="enviarWhatsApp()">Enviar mensaje por WhatsApp</button> 
     </div>
   </div>
 </section>
@@ -377,6 +377,30 @@ footer{background:var(--navy-dark);padding:40px 5%;color:rgba(255,255,255,0.5)}
 function toggleMenu(){
   var m=document.getElementById('mobileMenu');
   m.classList.toggle('open');
+}
+
+function enviarWhatsApp(){
+  var nombre=document.querySelector('input[placeholder="Tu nombre"]').value;
+  var empresa=document.querySelector('input[placeholder="Nombre de tu empresa"]').value;
+  var correo=document.querySelector('input[placeholder="correo@tuempresa.com"]').value;
+  var telefono=document.querySelector('input[placeholder="7000-0000"]').value;
+  var necesita=document.querySelector('select').value;
+  var mensaje=document.querySelector('textarea').value;
+
+  if(!nombre||!empresa||!necesita){
+    alert('Por favor completa al menos tu nombre, empresa y qué necesitas.');
+    return;
+  }
+
+  var texto='Hola ConectaHubSV, me interesa conocer más:%0A%0A'
+    +'*Nombre:* '+nombre+'%0A'
+    +'*Empresa:* '+empresa+'%0A'
+    +(correo?'*Correo:* '+correo+'%0A':'')
+    +(telefono?'*Teléfono:* '+telefono+'%0A':'')
+    +'*Necesito:* '+necesita+'%0A'
+    +(mensaje?'*Mensaje:* '+mensaje:'');
+
+  window.open('https://wa.me/50372088582?text='+texto,'_blank');
 }
 </script>
 </body>
